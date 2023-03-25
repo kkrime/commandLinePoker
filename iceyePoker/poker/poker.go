@@ -78,6 +78,61 @@ func (p *poker) play() (result string, err error) {
 
 	var hand1 *hand.Hand
 	var hand2 *hand.Hand
+	var usreInput string
+
+	// print empty line
+	fmt.Println()
+
+	usreInput, err = p.cli.ReadHand(enterFirstHand)
+	if err != nil {
+		return
+	}
+
+	// use a Channel to detect when the first hand finished being constructed
+	// NOTE: because there is a possibility that an error might occur during
+	// ReadHand() below (line 108), there is a chance, that this function can return before
+	// readHand1Chann is read. Therefore, to prevent a hanging goroutine and
+	// a memory leak, readHand1Chann is a buffered channel with a length of 1
+	// and NOT a unbuffered channel
+	readHand1Chann := make(chan struct{}, 1)
+
+	// construct hand1 on a seperate goroutine while the user enters hand2
+	// to increase performance
+	// NOTE: we must pass in userInput, beucase we use it again later in this fuction,
+	// otherwise its value might change before the goroutine below runs
+	go func(input string) {
+		hand1 = hand.NewHand(input)
+		readHand1Chann <- struct{}{}
+	}(usreInput)
+
+	usreInput, err = p.cli.ReadHand(enterSecondHand)
+	if err != nil {
+		return
+	}
+
+	hand2 = hand.NewHand(usreInput)
+
+	// make sure hand1 has finished being created
+	<-readHand1Chann
+
+	// hand 1 vs hand 2
+	res := hand1.CompareHand(hand2)
+	if res == hand.Win {
+		result = hand1Wins
+	} else if res == hand.Lose {
+		result = hand2Wins
+	} else {
+		result = tie
+	}
+	return
+}
+
+// play_ is the same as play above, but in this implementaotin,
+// a Wait Group is used instead of a Channel
+func (p *poker) play_() (result string, err error) {
+
+	var hand1 *hand.Hand
+	var hand2 *hand.Hand
 	// use a Wait Group to detect when the first hand has finished been constructed
 	var wg sync.WaitGroup
 	var usreInput string
@@ -109,56 +164,6 @@ func (p *poker) play() (result string, err error) {
 
 	// make sure hand1 has finished being created
 	wg.Wait()
-
-	// hand 1 vs hand 2
-	res := hand1.CompareHand(hand2)
-	if res == hand.Win {
-		result = hand1Wins
-	} else if res == hand.Lose {
-		result = hand2Wins
-	} else {
-		result = tie
-	}
-	return
-}
-
-// play_ is the same as play above, but in this implementaotin,
-// a Channel is used instead of a Wait Group
-func (p *poker) play_() (result string, err error) {
-
-	var hand1 *hand.Hand
-	var hand2 *hand.Hand
-	var usreInput string
-
-	// print empty line
-	fmt.Println()
-
-	usreInput, err = p.cli.ReadHand(enterFirstHand)
-	if err != nil {
-		return
-	}
-
-	// use a Channel to detect when the first hand finished being constructed
-	readHand1Chann := make(chan struct{})
-
-	// construct hand1 on a seperate goroutine while the user enters hand2
-	// to increase performance
-	// NOTE: we must pass in userInput, beucase we use it again later in this fuction,
-	// otherwise its value might change before the goroutine below runs
-	go func(input string) {
-		hand1 = hand.NewHand(input)
-		readHand1Chann <- struct{}{}
-	}(usreInput)
-
-	usreInput, err = p.cli.ReadHand(enterSecondHand)
-	if err != nil {
-		return
-	}
-
-	hand2 = hand.NewHand(usreInput)
-
-	// make sure hand1 has finished being created
-	<-readHand1Chann
 
 	// hand 1 vs hand 2
 	res := hand1.CompareHand(hand2)
