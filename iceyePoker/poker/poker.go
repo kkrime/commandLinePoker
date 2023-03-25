@@ -91,10 +91,10 @@ func (p *poker) play() (result string, err error) {
 	// use a Channel to detect when the first hand finished being constructed
 	// NOTE: because there is a possibility that an error might occur during
 	// ReadHand() below (line 108), there is a chance, that this function can return before
-	// readHand1Chann is read. Therefore, to prevent a hanging goroutine and
-	// a memory leak, readHand1Chann is a buffered channel with a length of 1
+	// createHand1Chann is read. Therefore, to prevent a hanging goroutine and
+	// a memory leak, createHand1Chann is a buffered channel with a length of 1
 	// and NOT a unbuffered channel
-	readHand1Chann := make(chan struct{}, 1)
+	createHand1Chann := make(chan struct{}, 1)
 
 	// construct hand1 on a seperate goroutine while the user enters hand2
 	// to increase performance
@@ -102,7 +102,7 @@ func (p *poker) play() (result string, err error) {
 	// otherwise its value might change before the goroutine below runs
 	go func(input string) {
 		hand1 = hand.NewHand(input)
-		readHand1Chann <- struct{}{}
+		createHand1Chann <- struct{}{}
 	}(usreInput)
 
 	usreInput, err = p.cli.ReadHand(enterSecondHand)
@@ -113,7 +113,7 @@ func (p *poker) play() (result string, err error) {
 	hand2 = hand.NewHand(usreInput)
 
 	// make sure hand1 has finished being created
-	<-readHand1Chann
+	<-createHand1Chann
 
 	// hand 1 vs hand 2
 	res := hand1.CompareHand(hand2)
