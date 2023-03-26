@@ -1,7 +1,7 @@
-# ICEYEPoker - The Best Command Line Poker Game Known To Mankind!!
+# iceyePoker - The Best Command Line Poker Game Known To Mankind!!
 </br>
 
-### ICEYEPoker is a LARVIS module, that lets you play poker with LARVIS, so you will never be bored again</br></br>Now every night can be Poker Night!
+### iceyePoker is a LARVIS module, that lets you play poker with LARVIS, so you will never be bored again</br></br>Now every night can be Poker Night!
 
 #### Modules used
 
@@ -9,7 +9,7 @@
 <br><br>I did consider using a module for the CLI interactions, but given the scope of this task, I decided against it as I felt that it wasn't really necessary
 and it would also mean I can write more code to showcase.
 
-#### Architecture
+#### Code
 
 There are a total of 5 modules (excluding the `main` module), 1 top level module (`poker`) and 4 submodules within it.
 
@@ -25,6 +25,7 @@ There are a total of 5 modules (excluding the `main` module), 1 top level module
 #### Run via Docker
 From the root folder, run: `sudo ./run.sh`
 #### or if you like to live life dangerously, you can go native
-From inside the `iceyePoker` folder, run: 
-- `go get -d -v` - to download all the dependencies
-- `go run .` - to run iceyePoker
+1. copy the `iceyePoker` folder to `$GOPATH/src`
+2. `cd $GOPATH/src/iceyePoker`
+3. `go get -d -v` - to download all the dependencies
+4. `go run .` - to run iceyePoker
