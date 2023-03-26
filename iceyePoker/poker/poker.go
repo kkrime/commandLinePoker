@@ -38,6 +38,7 @@ func (p *poker) Play() error {
 	printWelcomeMessage()
 
 	for {
+		printNewGame()
 		// play
 		result, err := p.play()
 		// result, err := p.play_()
@@ -90,7 +91,7 @@ func (p *poker) play() (result string, err error) {
 
 	// use a Channel to detect when the first hand finished being constructed
 	// NOTE: because there is a possibility that an error might occur during
-	// ReadHand() below (line 108), there is a chance, that this function can return before
+	// ReadHand() below (line 109), there is a chance, that this function can return before
 	// createHand1Chann is read. Therefore, to prevent a hanging goroutine and
 	// a memory leak, createHand1Chann is a buffered channel with a length of 1
 	// and NOT a unbuffered channel
@@ -177,10 +178,16 @@ func (p *poker) play_() (result string, err error) {
 	return
 }
 
+// printNewGame prints New Game
+func printNewGame() {
+	fmt.Println()
+	console.BringWhite("New Game")
+}
+
 // printWelcomeMessage prints a welcome message
 func printWelcomeMessage() {
 	fmt.Println()
-	console.BringWhite("Welcome To ICEYEPoker, The Best Command Line Poker Game Known To Humanity!!")
+	console.BringWhite("Welcome To iceyePoker, The Best Command Line Poker Game Known To Humanity!!")
 }
 
 // printExitMessage prints a exit messgae
