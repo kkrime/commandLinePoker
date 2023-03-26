@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
 	if err := poker.NewPokerGame().Play(); err != nil {
 		log.Fatal(err)
 	}
