@@ -1,3 +1,4 @@
+This repository is the solution, [this](https://github.com/kkrime/commandLinePoker/blob/main/developer-assignment-BA-go.md) is the problem
 # iceyePoker - The Best Command Line Poker Game Known To Mankind!!
 </br>
 
